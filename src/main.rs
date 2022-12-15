@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     audio.add("lose", "./sounds/lose.ogg");
     audio.add("move", "./sounds/move.ogg");
     audio.add("win", "./sounds/win.ogg");
-    audio.add("explode", "./sounds/start.ogg");
+    audio.add("explode", "./sounds/explode.ogg");
     audio.play("start");
 
     //terminal
@@ -84,12 +84,25 @@ fn main() -> Result<(), Box<dyn Error>> {
         if invaders.update(delta) {
             audio.play("move");
         }
+        if player.hit_invader(&mut invaders) {
+            audio.play("explode");
+        }
 
         //draw & render
         player.draw(&mut curr_frame);
         invaders.draw(&mut curr_frame);
         let _ = render_tx.send(curr_frame);
         thread::sleep(Duration::from_millis(7));
+
+        if invaders.all_kill() {
+            audio.play("win");
+            break 'gameloop;
+        }
+
+        if invaders.reached_bottom() {
+            audio.play("lose");
+            break 'gameloop;
+        }
     }
 
     //clean up

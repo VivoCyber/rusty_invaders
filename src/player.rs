@@ -2,6 +2,7 @@ use std::time::Duration;
 
 use crate::{
     frame::{Drawable, Frame},
+    invaders::Invaders,
     shot::Shot,
     NUM_COLS, NUM_ROWS,
 };
@@ -26,6 +27,7 @@ impl Player {
             self.x -= 1;
         }
     }
+
     pub fn move_right(&mut self) {
         if self.x < NUM_COLS - 1 {
             self.x += 1;
@@ -46,6 +48,19 @@ impl Player {
             shot.update(delta);
         }
         self.shots.retain(|shot| !shot.dead());
+    }
+
+    pub fn hit_invader(&mut self, invaders: &mut Invaders) -> bool {
+        let mut is_hit = false;
+        for shot in self.shots.iter_mut() {
+            if !shot.exploding {
+                if invaders.kill_invader_at(shot.x, shot.y) {
+                    shot.explode();
+                    is_hit = true;
+                };
+            }
+        }
+        is_hit
     }
 }
 

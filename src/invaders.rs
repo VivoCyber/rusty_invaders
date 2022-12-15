@@ -18,7 +18,7 @@ impl Invaders {
     pub fn new() -> Self {
         let mut army: Vec<Invader> = Vec::new();
         for x in 0..NUM_COLS {
-            if (x % 2 == 0) && (x > 2) && (x < (NUM_COLS - 2)) {
+            if (x % 2 == 0) && (x > 1) && (x < (NUM_COLS - 2)) {
                 for y in 0..NUM_ROWS {
                     if (y % 2 == 0) && (y < 9) && (y > 0) {
                         army.push(Invader { x, y })
@@ -66,6 +66,27 @@ impl Invaders {
             return true;
         }
         return false;
+    }
+
+    pub fn all_kill(&self) -> bool {
+        self.army.is_empty()
+    }
+
+    pub fn reached_bottom(&self) -> bool {
+        self.army.iter().map(|invader| invader.y).max().unwrap_or(0) >= NUM_ROWS - 1
+    }
+
+    pub fn kill_invader_at(&mut self, x: usize, y: usize) -> bool {
+        if let Some(index) = self
+            .army
+            .iter()
+            .position(|invader| invader.x == x && invader.y == y)
+        {
+            self.army.remove(index);
+            true
+        } else {
+            false
+        }
     }
 }
 
